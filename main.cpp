@@ -1,11 +1,13 @@
 #include <iostream>
 #include <thread>
 #include <SDL2/SDL.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 #ifdef _WIN32
-	#define NOMINMAX 1
-	#define WIN32_LEAN_AND_MEAN
-	#include <Windows.h>
+    #define NOMINMAX 1
+    #define WIN32_LEAN_AND_MEAN
+    #include <Windows.h>
 #endif // _WIN32
 
 class Renderer
@@ -73,31 +75,17 @@ void Renderer::stop()
 
 void Renderer::render()
 {
-    // Clear
-    if (SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255) < 0)
-    {
-        std::cerr << "Error clearing: " << SDL_GetError() << std::endl;
-    }
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
 
-    // Draw
-    SDL_Rect rect;
-    rect.x = 10;
-    rect.y = 10;
-    rect.w = 50;
-    rect.h = 50;
+    glBegin(GL_QUADS);
+    glColor3f(1, 0, 0); glVertex3f(0, 0, 0);
+    glColor3f(1, 1, 0); glVertex3f(100, 0, 0);
+    glColor3f(1, 0, 1); glVertex3f(100, 100, 0);
+    glColor3f(1, 1, 1); glVertex3f(0, 100, 0);
+    glEnd();
 
-    SDL_SetRenderDrawColor(mRenderer, 255, 0, 0, 255);
-
-    if (SDL_RenderDrawRect(mRenderer, &rect) < 0)
-    {
-        std::cerr << "Error drawing: " << SDL_GetError() << std::endl;
-    }
-
-    // Display
-    SDL_RenderPresent(mRenderer);
-
-    // Cap framerate at ~50 Hz.
-    SDL_Delay(20);
+    SDL_GL_SwapWindow(mWindow);
 }
 
 void Renderer::renderJob()
@@ -123,28 +111,92 @@ void Renderer::renderJob()
     }
 }
 
+void handleKeys(unsigned char key, int x, int y)
+{
+    //Toggle quad
+    if (key == 'q')
+    {
+        //gRenderQuad = !gRenderQuad;
+    }
+}
+
 int main(int argc, char **argv)
 {
+    //Use OpenGL 2.1
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
-    SDL_Window *window = SDL_CreateWindow("Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 500, SDL_WINDOW_RESIZABLE);
+    // Set up OpenGL default values.
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+    SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
+
+    SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 8);
+
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
+
+    // Create the OpenGL window.
+    SDL_Window *window = SDL_CreateWindow("Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480,
+        SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+    SDL_GLContext oContext = SDL_GL_CreateContext(window);
+
+    // Set up the drawing environment.
+    glClearColor(0, 0, 0, 0);
+    glClearDepth(1.0f);
+    glViewport(0, 0, 640, 480);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, 640, 480, 0, 1, -1);
+    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_TEXTURE_2D);
+    glLoadIdentity();
+
+    // Synchronize buffer-swap with vertical-refresh.
+    SDL_GL_SetSwapInterval(1);
 
     Renderer r(window);
 
-    while (window)
+    //Enable text input
+    SDL_StartTextInput();
+
+    while (window != nullptr)
     {
         SDL_Event event;
 
         if (SDL_WaitEvent(&event))
         {
-            if (event.type == SDL_QUIT)
+            switch (event.type)
             {
+            case SDL_QUIT:
                 r.stop();
                 SDL_DestroyWindow(window);
                 window = nullptr;
+                break;
+
+                //Handle keypress with current mouse position
+            case SDL_TEXTINPUT:
+                {
+                    int x = 0, y = 0;
+                    SDL_GetMouseState(&x, &y);
+                    handleKeys(event.text.text[0], x, y);
+                }
+                break;
             }
         }
     }
+
+    //Disable text input
+    SDL_StopTextInput();
 
     SDL_Quit();
 
@@ -156,7 +208,7 @@ int main(int argc, char **argv)
 // MinGW expects a WinMain().
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevIns, LPSTR lpszArgument, int iShow)
 {
-	return main(0, nullptr);
+    return main(0, nullptr);
 }
 
 #endif // __MINGW32__

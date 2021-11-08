@@ -224,6 +224,10 @@ void Renderer::render()
     }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, 640, 480, 0, 1, -1);
+    glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     glBegin(GL_QUADS);
@@ -285,10 +289,10 @@ int main(int argc, char **argv)
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
     SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
 
-    SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 8);
+    //SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 8);
+    //SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 8);
+    //SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE, 8);
+    //SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 8);
 
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
@@ -296,6 +300,11 @@ int main(int argc, char **argv)
     // Create the OpenGL window.
     SDL_Window *window = SDL_CreateWindow("Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480,
         SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+    if (window == nullptr)
+    {
+        printf ("Could not create window: %s\n", SDL_GetError());
+        return 1;
+    }
     SDL_GLContext oContext = SDL_GL_CreateContext(window);
 
     // Set up the drawing environment.

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <thread>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <tbb/concurrent_queue.h>
@@ -306,6 +307,19 @@ int main(int argc, char **argv)
         return 1;
     }
     SDL_GLContext oContext = SDL_GL_CreateContext(window);
+
+    // What does this return on various platforms?
+    // Technique taken from https://wiki.libsdl.org/SDL_GetWindowWMInfo
+    // and https://stackoverflow.com/questions/24117983/ .
+    SDL_SysWMinfo wmInfo;
+    SDL_VERSION(&wmInfo.version);
+    SDL_GetWindowWMInfo(window, &wmInfo);
+    #ifdef _WIN32
+    HWND hwnd = wmInfo.info.win.window;
+    #else // _WIN32
+    auto hdis = wmInfo.info.x11.display;
+    auto hwnd = wmInfo.info.x11.window;
+    #endif // _WIN32
 
     // Set up the drawing environment.
     glClearColor(0, 0, 0, 0);

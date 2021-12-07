@@ -23,6 +23,7 @@ public:
 	SdlWindow();
 	~SdlWindow();
 	int Init();
+	SdlRenderer *GetRenderer() const { return mRenderer; }
 	void Run();
 	void Shutdown();
 	

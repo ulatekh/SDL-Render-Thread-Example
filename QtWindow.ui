@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtWindow</class>
+ <widget class="QMainWindow" name="QtWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>250</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>SDL-Render-Thread-Example</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="vboxLayout">
+    <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <property name="spacing">
+       <number>12</number>
+      </property>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="moveUpButton">
+        <property name="text">
+         <string>Move up</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="moveLeftButton">
+        <property name="text">
+         <string>Move left</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="moveRightButton">
+         <property name="text">
+         <string>Move right</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="moveDownButton">
+        <property name="text">
+         <string>Move down</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>0</width>
+        <height>0</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>400</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>moveUpButton</sender>
+   <signal>pressed()</signal>
+   <receiver>QtWindow</receiver>
+   <slot>moveUpButton_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>352</x>
+     <y>54</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>moveLeftButton</sender>
+   <signal>pressed()</signal>
+   <receiver>QtWindow</receiver>
+   <slot>moveLeftButton_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>352</x>
+     <y>89</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>moveRightButton</sender>
+   <signal>pressed()</signal>
+   <receiver>QtWindow</receiver>
+   <slot>moveRightButton_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>53</x>
+     <y>124</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>moveDownButton</sender>
+   <signal>pressed()</signal>
+   <receiver>QtWindow</receiver>
+   <slot>moveDownButton_pressed()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>53</x>
+     <y>124</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>124</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

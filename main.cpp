@@ -1,7 +1,10 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_syswm.h>
+#include <QApplication>
+#include "QtWindow.hpp"
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_syswm.h>
+#include <thread>
 #include "SdlWindow.hpp"
 
 #ifdef _WIN32
@@ -41,25 +44,45 @@ void SdlShutdown()
 	SDL_Quit();
 }
 
+void *QtThreadFunc(void *a_pData)
+{
+	SdlWindow *pSdlWindow = static_cast<SdlWindow *>(a_pData);
+	
+	int iArgc(0);
+	QApplication a(iArgc, nullptr);
+	QtWindow w(nullptr, pSdlWindow->GetRenderer());
+    w.show();
+    return (void *)(intptr_t)a.exec();
+}
+
 int main(int argc, char **argv)
 {
 	// Initialize SDL2 in general.
 	SdlInit();
 
-	SdlWindow *pWindow = new SdlWindow();
-	if (pWindow->Init() != 0)
+	// Create the SDL window.
+	SdlWindow *pSdlWindow = new SdlWindow();
+	if (pSdlWindow->Init() != 0)
 		return 1;
+	
+	// Start the Qt thread.
+    std::thread *pQtThread = new std::thread (&QtThreadFunc, pSdlWindow);
 
-    //Enable text input
+    // Enable text input
     SDL_StartTextInput();
 
 	// Run the window.
-	pWindow->Run();
+	pSdlWindow->Run();
 
-    //Disable text input
+    // Disable text input
     SDL_StopTextInput();
 
+	// Shut down SDL2.
 	SdlShutdown();
+	
+	// Wait for the Qt thread to shut down.
+	pQtThread->join();
+	delete pQtThread;
 
     return 0;
 }
